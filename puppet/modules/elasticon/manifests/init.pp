@@ -8,6 +8,7 @@ class elasticon{
   docker::run { 'run-elasticsearch':
     image   => 'elasticsearch',
     ports   => ['9200:9200', '9300:9300'],
+    volumes => ['/vagrant:/data/'],
   } ->
 
   service { 'disable-firewalld':
