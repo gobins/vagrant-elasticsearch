@@ -10,6 +10,10 @@ class elasticon{
     ports   => ['9200:9200', '9300:9300'],
   } ->
 
+  service { 'disable-firewalld':
+    enable => false,
+  }
+
   exec {'wait-for-es':
     command    => "curl -XGET http://localhost:9200/",
     tries      => "10",
@@ -33,14 +37,16 @@ class elasticon{
     cwd         => '/tmp',
     path        => '/usr/bin',
     require     => Wget::Fetch["download-ict-report"],
-    creates     => "/tmp/ICT\ Survey\ Data\ 2014-15\ CSV/Figure\ 10.csv",
+    creates     => "/tmp/ICT Survey Data 2014-15",
+    returns     => 1,
   }
 
   file { "/tmp/load_csv_data.py":
-    mode   => "0744",
-    owner  => 'root',
-    group  => 'root',
-    source => 'puppet:///modules/elasticon/load_csv_data.py',
+    mode    => "0744",
+    owner   => 'root',
+    group   => 'root',
+    source  => 'puppet:///modules/elasticon/load_csv_data.py',
+    require => Exec['unzip']
   }
 
   exec { 'clear-index':
