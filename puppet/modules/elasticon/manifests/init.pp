@@ -33,7 +33,7 @@ class elasticon{
     cwd         => '/tmp',
     path        => '/usr/bin',
     require     => Wget::Fetch["download-ict-report"],
-    creates     => '/tmp/ICT\ Survey\ Data\ 2014-15\ CSV/Figure\ 10.csv'
+    creates     => "/tmp/ICT\ Survey\ Data\ 2014-15\ CSV/Figure\ 10.csv",
   }
 
   file { "/tmp/load_csv_data.py":
@@ -41,6 +41,19 @@ class elasticon{
     owner  => 'root',
     group  => 'root',
     source => 'puppet:///modules/elasticon/load_csv_data.py',
+  }
+
+  exec { 'clear-index':
+    command  => "curl -XDELETE http://localhost:9200/ict",
+    path     => '/usr/bin',
+    require  => Exec['wait-for-es']
+  } ->
+
+  exec { 'run-csv-load':
+    command     => 'python /tmp/load_csv_data.py --file /tmp/ICT\ Survey\ Data\ 2014-15\ CSV/Figure\ 10.csv',
+    cwd         => '/tmp',
+    path        => '/usr/bin',
+    require     => File["/tmp/load_csv_data.py"],
   }
 
 }
