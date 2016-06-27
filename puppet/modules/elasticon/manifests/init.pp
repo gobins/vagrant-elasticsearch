@@ -1,0 +1,3 @@
+class elasticon{
+     include docker
+}

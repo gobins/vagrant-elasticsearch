@@ -10,4 +10,12 @@ Vagrant.configure("2") do |config|
       "--memory", "1024",
     ]
   end
+
+  config.vm.provision :shell, :path => "bootstrap.sh"
+
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "puppet/manifests"
+    puppet.manifest_file = "site.pp"
+    puppet.module_path = "puppet/modules"
+  end
 end
