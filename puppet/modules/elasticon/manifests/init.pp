@@ -8,18 +8,20 @@ class elasticon{
   docker::run { 'run-elasticsearch':
     image   => 'elasticsearch',
     ports   => ['9200:9200', '9300:9300'],
-    volumes => ['/vagrant:/data/'],
+    volumes => ['/vagrant:/etc/elasticsearch'],
   } ->
-
-  service { 'disable-firewalld':
-    enable => false,
-  }
 
   exec {'wait-for-es':
     command    => "curl -XGET http://localhost:9200/",
     tries      => "10",
     try_sleep  => 5,
     path       => '/usr/bin',
+    before     => Exec['run-csv-load']
+  }
+
+  service { 'disable-firewalld':
+    enable => false,
+    ensure => stopped,
   }
 
   wget::fetch { "download-ict-report":
